@@ -7,7 +7,7 @@ O_FILES=$(patsubst %.c,%.o,$(wildcard *.c))
 all: build
  
 build: $(O_FILES)
-	$(CC) $(CFLAGS) $(O_FILES) -o mathfs
+	$(CC) $(O_FILES) $(CFLAGS) -o mathfs
     
 clean:
 	rm -rf *.o mathfs
