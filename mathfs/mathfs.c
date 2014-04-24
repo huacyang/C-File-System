@@ -6,7 +6,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <time.h>
-#include <fuse/fuse.h>
+#include "fuse/include/fuse.h"
  
 // FUSE function implementations.
 static int mathfs_getattr(const char *path, struct stat *stbuf)
