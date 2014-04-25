@@ -85,7 +85,7 @@ mathfs_getattr(const char *path, struct stat *stbuf) {
 			   strstr(path, _div_path) != NULL ||
 			   strstr(path, _exp_path) != NULL) 
 	 {
-		if(strstr(path,"doc") != NULL || numberOfOccurances == 3)
+		if(strstr(path,"doc") != NULL || numberOfOccurances == 3 || (numberOfOccurances == 2 && strstr(path,"factor")))
 		{
 			stbuf->st_mode = S_IFREG | 0444;
 			//Link to the file and its number
@@ -116,12 +116,6 @@ static int
 mathfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi) {
     (void) offset;
     (void) fi;
-    char * resultPath = calloc(6,sizeof(char));
-
-    char *temp = calloc(strlen(path),sizeof(char *));
-    char *token = strtok(temp,"/");
-    char * first = strtok(NULL,"/");
-    char * second = strtok(NULL,"/");
 
 
 
@@ -212,7 +206,26 @@ mathfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
     char *temp, *token, *first, *second, *result;
     
 	if(strstr(path, _factor_path) != NULL) {
-		size = help_read(buf, "Show the prime factors of a number\nThe file factor/n contains the prime factors of n.\n", size, offset);
+		if(strstr(path,"doc")) {
+			size = help_read(buf, "Show the prime factors of a number\nThe file factor/n contains the prime factors of n.\n", size, offset);
+		} 
+		else 
+		{
+			temp = calloc(strlen(path),sizeof(char *));
+			strcpy(temp,path);
+			token = strtok(temp,"/");
+			first = strtok(NULL,"/");
+			if(findNumberOfOccurances(first , '.') != 0)
+			{
+				size = help_read(buf, "the number to factor must be an integer\n", size, offset);
+			}
+			else
+			{
+				size = help_read(buf, first, size, offset);	
+			}
+			//int firstValuefactor = atoi(first);
+		}
+
 	} else if(strstr(path, _fib_path) != NULL) {
 		size = help_read(buf, "Produce a fibonacci sequence.\nThe file fib/n contains the first n fibonacci numbers.\n", size, offset);
 	} else if(strstr(path, _add_path) != NULL) {
