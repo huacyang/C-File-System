@@ -30,10 +30,8 @@ static int _input_len = 20;
 int
 findNumberOfOccurances(const char * string , char occurance)
 {
-	int i;
-	int count = 0;
-	for(i=0 ; string[i]!='\0' ; i++)
-	{
+	int i, count = 0;
+	for(i=0 ; string[i]!='\0' ; i++) {
 		if(string[i] == occurance)
 			count++;	
 	}
@@ -51,6 +49,7 @@ numDigits(int number)
     }
     return digits;
 }
+
 
 
 // FUSE function implementations.
@@ -76,24 +75,20 @@ mathfs_getattr(const char *path, struct stat *stbuf) {
 			   strcmp(_exp_path_dir, path) == 0) {
 		stbuf->st_mode = S_IFDIR | 0755;
 		stbuf->st_nlink = 2;
-	}
-	 else if (strstr(path, _factor_path) != NULL ||
+	} else if (strstr(path, _factor_path) != NULL ||
 			   strstr(path, _fib_path) != NULL ||
 			   strstr(path, _add_path) != NULL ||
 			   strstr(path, _sub_path) != NULL ||
 			   strstr(path, _mul_path) != NULL ||
 			   strstr(path, _div_path) != NULL ||
-			   strstr(path, _exp_path) != NULL) 
-	 {
-		if(strstr(path,"doc") != NULL || numberOfOccurances == 3 || (numberOfOccurances == 2 && strstr(path,"factor")))
-		{
+			   strstr(path, _exp_path) != NULL) {
+		
+		if(strstr(path,"doc") != NULL || numberOfOccurances == 3 || (numberOfOccurances == 2 && strstr(path,"factor"))) {
 			stbuf->st_mode = S_IFREG | 0444;
 			//Link to the file and its number
 			stbuf->st_nlink = 1;
 			stbuf->st_size = _input_len;
-		}
-		else
-		{
+		} else {
 			stbuf->st_mode = S_IFDIR | 0755;
 			//Link to the file and its number
 			stbuf->st_nlink = 2;
@@ -122,8 +117,8 @@ mathfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset
     char * first = strtok(NULL,"/");
     char * second = strtok(NULL,"/");
 
-
     if (strcmp(path, "/") == 0) {
+
 		filler(buf, ".", NULL, 0);
 		filler(buf, "..", NULL, 0);
 		filler(buf, _factor_path_dir + 1, NULL, 0);
@@ -144,15 +139,11 @@ mathfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset
     	filler(buf, ".", NULL, 0);
 		filler(buf, "..", NULL, 0);
 		filler(buf, "doc", NULL, 0);
-    } 
-    else if (second != NULL)
-    {
+    } else if (second != NULL) {
     	filler(buf, ".", NULL, 0);
 		filler(buf, "..", NULL, 0);
 		filler(buf, second, NULL, 0);
-    }
-    else 
-    {
+    } else {
 		return -ENOENT;
     }
 
@@ -201,6 +192,34 @@ help_read(char *buf, char *str, size_t size, off_t offset) {
 	return size;
 }
 
+static char*
+help_factor(int digit) {
+	int i, prime = 2;
+	char *full, *temp, *num;
+
+    while(digit != 0){
+        if(digit % prime != 0)
+            prime = prime + 1;
+        else {
+            digit = digit / prime;
+            //printf("%d ", prime);
+
+        	temp = calloc(strlen(full),sizeof(char*));
+    		strcat(temp, full);
+        	full = calloc(strlen(temp)+numDigits(prime)+1,sizeof(char*));
+        	strcat(full, temp);
+        	num = calloc(numDigits(prime)+1,sizeof(char*));
+        	sprintf(num, "%d%s", prime, "\n");
+        	strcat(full, num);
+
+            if(digit == 1)
+                break;
+        }
+    }
+
+    return full;
+}
+
 static int 
 mathfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *fi) {
     (void) fi;
@@ -212,22 +231,18 @@ mathfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
 	if(strstr(path, _factor_path) != NULL) {
 		if(strstr(path,"doc")) {
 			size = help_read(buf, "Show the prime factors of a number\nThe file factor/n contains the prime factors of n.\n", size, offset);
-		} 
-		else 
-		{
+		} else {
 			temp = calloc(strlen(path),sizeof(char *));
 			strcpy(temp,path);
 			token = strtok(temp,"/");
 			first = strtok(NULL,"/");
+			// handler for when not factoring an integer
 			if(findNumberOfOccurances(first , '.') != 0)
-			{
-				size = help_read(buf, "the number to factor must be an integer\n", size, offset);
-			}
-			else
-			{
-				size = help_read(buf, first, size, offset);	
-			}
-			//int firstValuefactor = atoi(first);
+				return help_read(buf, "The number to factor must be an integer.\n", size, offset);
+
+			firstValue = atoi(first);
+			result = help_factor(firstValue);
+			return help_read(buf, result, size, offset);	
 		}
 
 	} else if(strstr(path, _fib_path) != NULL) {
@@ -244,12 +259,7 @@ mathfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
 			firstValue = atof(first);
 			second = strtok(NULL,"/");
 			secondValue = atof(second);
-
 			resultValue = secondValue + firstValue;
-			numberOfDigits = numDigits(resultValue);
-			result = calloc(numberOfDigits,sizeof(char *));
-			sprintf(result, "%g\n", resultValue);
-			size = help_read(buf, result, size, offset);
 		}
 	} else if(strstr(path, _sub_path) != NULL) {
 		if(strstr(path,"doc")) {
@@ -263,12 +273,7 @@ mathfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
 			firstValue = atof(first);
 			second = strtok(NULL,"/");
 			secondValue = atof(second);
-
 			resultValue = firstValue - secondValue;
-			numberOfDigits = numDigits(resultValue);
-			result = calloc(numberOfDigits,sizeof(char *));
-			sprintf(result,"%g\n",resultValue);
-			size = help_read(buf, result, size, offset);
 		}
 	} else if(strstr(path, _mul_path) != NULL) {
 		if(strstr(path,"doc")) {
@@ -282,12 +287,7 @@ mathfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
 			firstValue = atof(first);
 			second = strtok(NULL,"/");
 			secondValue = atof(second);
-
 			resultValue = firstValue * secondValue;
-			numberOfDigits = numDigits(resultValue);
-			result = calloc(numberOfDigits,sizeof(char *));
-			sprintf(result,"%g\n",resultValue);
-			size = help_read(buf, result, size, offset);
 		}
 	} else if(strstr(path, _div_path) != NULL) {
 		if(strstr(path,"doc")) {
@@ -304,13 +304,9 @@ mathfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
 
 			// handler for when dividing by 0
 			if (secondValue == 0)
-				return help_read(buf, "divide by zero error\n", size, offset);
+				return help_read(buf, "Divide by zero error.\n", size, offset);
 
 			resultValue = (double) firstValue / (double) secondValue;
-			numberOfDigits = numDigits(resultValue);
-			result = calloc(numberOfDigits,sizeof(char *));
-			sprintf(result,"%g\n",resultValue);
-			size = help_read(buf, result, size, offset);
 		}	
 	} else if(strstr(path, _exp_path) != NULL) {
 		if(strstr(path,"doc")) {
@@ -326,15 +322,16 @@ mathfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
 			secondValue = atof(second);
 
 			resultValue = pow(firstValue,secondValue);
-			numberOfDigits = numDigits(resultValue);
-			result = calloc(numberOfDigits,sizeof(char *));
-			sprintf(result,"%g\n",resultValue);
-			size = help_read(buf, result, size, offset);
 		}	
 	} else {
 		return -ENOENT;
 	}
 
+
+	numberOfDigits = numDigits(resultValue);
+	result = calloc(numberOfDigits,sizeof(char *));
+	sprintf(result, "%g\n", resultValue);
+	size = help_read(buf, result, size, offset);
 	return size;
 }
 
