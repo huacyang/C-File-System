@@ -117,6 +117,10 @@ mathfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset
     (void) offset;
     (void) fi;
 
+    char *temp = calloc(strlen(path),sizeof(char *));
+    char *token = strtok(temp,"/");
+    char * first = strtok(NULL,"/");
+    char * second = strtok(NULL,"/");
 
 
     if (strcmp(path, "/") == 0) {
@@ -244,7 +248,7 @@ mathfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
 			resultValue = secondValue + firstValue;
 			numberOfDigits = numDigits(resultValue);
 			result = calloc(numberOfDigits,sizeof(char *));
-			sprintf(result, "%f\n", resultValue);
+			sprintf(result, "%g\n", resultValue);
 			size = help_read(buf, result, size, offset);
 		}
 	} else if(strstr(path, _sub_path) != NULL) {
@@ -263,7 +267,7 @@ mathfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
 			resultValue = firstValue - secondValue;
 			numberOfDigits = numDigits(resultValue);
 			result = calloc(numberOfDigits,sizeof(char *));
-			sprintf(result,"%f\n",resultValue);
+			sprintf(result,"%g\n",resultValue);
 			size = help_read(buf, result, size, offset);
 		}
 	} else if(strstr(path, _mul_path) != NULL) {
@@ -282,7 +286,7 @@ mathfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
 			resultValue = firstValue * secondValue;
 			numberOfDigits = numDigits(resultValue);
 			result = calloc(numberOfDigits,sizeof(char *));
-			sprintf(result,"%f\n",resultValue);
+			sprintf(result,"%g\n",resultValue);
 			size = help_read(buf, result, size, offset);
 		}
 	} else if(strstr(path, _div_path) != NULL) {
@@ -305,7 +309,7 @@ mathfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
 			resultValue = (double) firstValue / (double) secondValue;
 			numberOfDigits = numDigits(resultValue);
 			result = calloc(numberOfDigits,sizeof(char *));
-			sprintf(result,"%f\n",resultValue);
+			sprintf(result,"%g\n",resultValue);
 			size = help_read(buf, result, size, offset);
 		}	
 	} else if(strstr(path, _exp_path) != NULL) {
@@ -324,7 +328,7 @@ mathfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
 			resultValue = pow(firstValue,secondValue);
 			numberOfDigits = numDigits(resultValue);
 			result = calloc(numberOfDigits,sizeof(char *));
-			sprintf(result,"%f\n",resultValue);
+			sprintf(result,"%g\n",resultValue);
 			size = help_read(buf, result, size, offset);
 		}	
 	} else {
