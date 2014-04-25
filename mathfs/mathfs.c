@@ -26,13 +26,42 @@ static const char *_exp_path_dir = "/exp";
 
 static int _input_len = 20;
 
+int
+findNumberOfOccurances(const char * string , char occurance)
+{
+	int i;
+	int count = 0;
+	for(i=0 ; string[i]!='\0' ; i++)
+	{
+		if(string[i] == occurance)
+			count++;	
+	}
+	return count;
+}
+
+int
+numDigits(int number)
+{
+    int digits = 0;
+    if (number < 0) digits = 1; // remove this line if '-' counts as a digit
+    while (number) {
+        number /= 10;
+        digits++;
+    }
+    return digits;
+}
+
+
 // FUSE function implementations.
 static int
 mathfs_getattr(const char *path, struct stat *stbuf) {
 	int res = 0;
-
+	int numberOfOccurances = findNumberOfOccurances(path,'/');
 	//Reset stbuf
 	memset(stbuf, 0, sizeof(struct stat));
+
+
+
 	//Marks the file as a direcrory
 	if (strcmp(path, "/") == 0) {
 		stbuf->st_mode = S_IFDIR | 0755;
@@ -46,18 +75,31 @@ mathfs_getattr(const char *path, struct stat *stbuf) {
 			   strcmp(_exp_path_dir, path) == 0) {
 		stbuf->st_mode = S_IFDIR | 0755;
 		stbuf->st_nlink = 2;
-	} else if (strstr(path, _factor_path) != NULL ||
+	}
+	 else if (strstr(path, _factor_path) != NULL ||
 			   strstr(path, _fib_path) != NULL ||
 			   strstr(path, _add_path) != NULL ||
 			   strstr(path, _sub_path) != NULL ||
 			   strstr(path, _mul_path) != NULL ||
 			   strstr(path, _div_path) != NULL ||
-			   strstr(path, _exp_path) != NULL) {
-		stbuf->st_mode = S_IFREG | 0444;
-		//Link to the file and its number
-		stbuf->st_nlink = 1;
-		stbuf->st_size = _input_len;
-	} else {
+			   strstr(path, _exp_path) != NULL) 
+	 {
+		if(strstr(path,"doc") != NULL || numberOfOccurances == 3)
+		{
+			stbuf->st_mode = S_IFREG | 0444;
+			//Link to the file and its number
+			stbuf->st_nlink = 1;
+			stbuf->st_size = _input_len;
+		}
+		else
+		{
+			stbuf->st_mode = S_IFDIR | 0755;
+			//Link to the file and its number
+			stbuf->st_nlink = 2;
+			//stbuf->st_size = _input_len;	
+		}
+	} 
+	else {
 		res = -ENOENT;
 	}
 
@@ -74,6 +116,13 @@ mathfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset
     (void) offset;
     (void) fi;
     char * resultPath = calloc(6,sizeof(char));
+
+    char *temp = calloc(strlen(path),sizeof(char *));
+    char *token = strtok(temp,"/");
+    char * first = strtok(NULL,"/");
+    char * second = strtok(NULL,"/");
+
+
 
     if (strcmp(path, "/") == 0) {
 		filler(buf, ".", NULL, 0);
@@ -96,7 +145,15 @@ mathfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset
     	filler(buf, ".", NULL, 0);
 		filler(buf, "..", NULL, 0);
 		filler(buf, "doc", NULL, 0);
-    } else {
+    } 
+    else if (second != NULL)
+    {
+    	filler(buf, ".", NULL, 0);
+		filler(buf, "..", NULL, 0);
+		filler(buf, second, NULL, 0);
+    }
+    else 
+    {
 		return -ENOENT;
     }
 
@@ -175,9 +232,35 @@ mathfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
 		size = help_read(buf, (char*)path, size, offset);
 	}
 	else if(strstr(path, _fib_path) != NULL)
+	{
 		size = help_read(buf, "Fibonacci...\n", size, offset);
+	}
+
 	else if(strstr(path, _add_path) != NULL)
-		size = help_read(buf, "Addition...\n", size, offset);
+	{
+		if(strstr(path,"doc"))
+		{
+			size = help_read(buf, "Addition\n", size, offset);
+		}
+		else
+		{
+			//add the two numbers hooker
+			 char *temp = calloc(strlen(path),sizeof(char *));
+			 strcpy(temp,path);
+			 char *token = strtok(temp,"/");
+			 char * first = strtok(NULL,"/");
+			 int firstValue = atoi(first);
+			 char * second = strtok(NULL,"/");
+			 int secondValue = atoi(second);
+
+			 int resultValue = secondValue + firstValue;
+			 int numberOfDigits = numDigits(resultValue);
+			 char *result = calloc(numberOfDigits,sizeof(char *));
+			 sprintf(result,"%d\n",resultValue);
+			//char * result = calloc()
+			size = help_read(buf, result, size, offset);
+		}
+	}
 	else if(strstr(path, _sub_path) != NULL)
 		size = help_read(buf, "Subtraction...\n", size, offset);
 	else if(strstr(path, _mul_path) != NULL)
