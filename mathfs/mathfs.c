@@ -36,6 +36,37 @@ static const char *_exp_path_dir = "/exp";
 
 static int _input_len = 20;
 
+char *
+findFib(int numberOfFibs)
+{
+	int store[numberOfFibs], first = 0, second = 1, next, c,digitNumber = 0;
+	char * resultString, * tempString;
+   for ( c = 0 ; c < numberOfFibs ; c++ )
+   {
+      if ( c <= 1 )
+         next = c;
+      else
+      {
+         next = first + second;
+         first = second;
+         second = next;
+      }
+      digitNumber += numDigits(next);
+      digitNumber += 1;
+      store[c] = next;
+   }
+
+	resultString = calloc(digitNumber,sizeof(char *));
+    for (c = 0 ; c < numberOfFibs ; c ++)
+    {
+    	tempString = calloc(numDigits(store[c])+1, sizeof(char*));
+    	sprintf(tempString,"%d\n",store[c]);	
+    	strcat(resultString,tempString);
+    }
+
+   return resultString;
+}
+
 int
 findNumberOfOccurances(const char * string , char occurance)
 {
@@ -58,8 +89,6 @@ numDigits(int number)
     }
     return digits;
 }
-
-
 
 // FUSE function implementations.
 static int
@@ -91,8 +120,10 @@ mathfs_getattr(const char *path, struct stat *stbuf) {
 			   strstr(path, _mul_path) != NULL ||
 			   strstr(path, _div_path) != NULL ||
 			   strstr(path, _exp_path) != NULL) {
-		
-		if(strstr(path,"doc") != NULL || numberOfOccurances == 3 || (numberOfOccurances == 2 && strstr(path,"factor"))) {
+		if(strstr(path,"doc") != NULL || 
+			numberOfOccurances == 3 || 
+			(numberOfOccurances == 2 && (strstr(path,"factor") ||
+			strstr(path,"fib")))) {
 			stbuf->st_mode = S_IFREG | 0444;
 			//Link to the file and its number
 			stbuf->st_nlink = 1;
@@ -253,9 +284,22 @@ mathfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
 			result = help_factor(firstValue);
 			return help_read(buf, result, size, offset);	
 		}
-
 	} else if(strstr(path, _fib_path) != NULL) {
-		size = help_read(buf, "Produce a fibonacci sequence.\nThe file fib/n contains the first n fibonacci numbers.\n", size, offset);
+
+		if(strstr(path,"doc")) {
+			size = help_read(buf, "Produce a fibonacci sequence.\nThe file fib/n contains the first n fibonacci numbers.\n", size, offset);
+		} else {
+			temp = calloc(strlen(path),sizeof(char *));
+			strcpy(temp,path);
+			token = strtok(temp,"/");
+			first = strtok(NULL,"/");
+			firstValue = atoi(first);
+			if(findNumberOfOccurances(first , '.') != 0)
+				return help_read(buf, "the number to factor must be an integer\n", size, offset);
+			
+			char * number = findFib(firstValue);
+			return help_read(buf, number, size, offset);
+		}	
 	} else if(strstr(path, _add_path) != NULL) {
 		if(strstr(path,"doc")) {
 			size = help_read(buf, "Add two numbers.\nThe file add/a/b contains the sum a+b.\n", size, offset);
