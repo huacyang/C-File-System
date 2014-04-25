@@ -437,7 +437,7 @@ Copyright (C) 2012 Free Software Foundation, Inc.
 This config.status script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it."
 
-ac_pwd='/home/parallels/Documents/OS/C-File-System/mathfs/fuse'
+ac_pwd='/home/parallels/Github/C-File-System/mathfs/fuse'
 srcdir='.'
 INSTALL='/usr/bin/install -c'
 MKDIR_P='/bin/mkdir -p'
@@ -892,12 +892,12 @@ S["mkdir_p"]="/bin/mkdir -p"
 S["MKDIR_P"]="/bin/mkdir -p"
 S["INSTALL_STRIP_PROGRAM"]="$(install_sh) -c -s"
 S["STRIP"]="strip"
-S["install_sh"]="${SHELL} /home/parallels/Documents/OS/C-File-System/mathfs/fuse/install-sh"
-S["MAKEINFO"]="${SHELL} /home/parallels/Documents/OS/C-File-System/mathfs/fuse/missing --run makeinfo"
-S["AUTOHEADER"]="${SHELL} /home/parallels/Documents/OS/C-File-System/mathfs/fuse/missing --run autoheader"
-S["AUTOMAKE"]="${SHELL} /home/parallels/Documents/OS/C-File-System/mathfs/fuse/missing --run automake-1.12"
-S["AUTOCONF"]="${SHELL} /home/parallels/Documents/OS/C-File-System/mathfs/fuse/missing --run autoconf"
-S["ACLOCAL"]="${SHELL} /home/parallels/Documents/OS/C-File-System/mathfs/fuse/missing --run aclocal-1.12"
+S["install_sh"]="${SHELL} /home/parallels/Github/C-File-System/mathfs/fuse/install-sh"
+S["MAKEINFO"]="${SHELL} /home/parallels/Github/C-File-System/mathfs/fuse/missing --run makeinfo"
+S["AUTOHEADER"]="${SHELL} /home/parallels/Github/C-File-System/mathfs/fuse/missing --run autoheader"
+S["AUTOMAKE"]="${SHELL} /home/parallels/Github/C-File-System/mathfs/fuse/missing --run automake-1.12"
+S["AUTOCONF"]="${SHELL} /home/parallels/Github/C-File-System/mathfs/fuse/missing --run autoconf"
+S["ACLOCAL"]="${SHELL} /home/parallels/Github/C-File-System/mathfs/fuse/missing --run aclocal-1.12"
 S["VERSION"]="2.9.3"
 S["PACKAGE"]="fuse"
 S["CYGPATH_W"]="echo"

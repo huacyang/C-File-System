@@ -678,8 +678,8 @@ configure:12267: checking for library containing dlopen
 configure:12298: gcc -o conftest -Wall -W -Wno-sign-compare -Wstrict-prototypes -Wmissing-declarations -Wwrite-strings -g -O2 -fno-strict-aliasing   conftest.c  >&5
 conftest.c:38:1: warning: function declaration isn't a prototype [-Wstrict-prototypes]
 conftest.c:40:1: warning: function declaration isn't a prototype [-Wstrict-prototypes]
-/tmp/cckjncIq.o: In function `main':
-/home/parallels/Documents/OS/C-File-System/mathfs/fuse/conftest.c:42: undefined reference to `dlopen'
+/tmp/ccvVqnZd.o: In function `main':
+/home/parallels/Github/C-File-System/mathfs/fuse/conftest.c:42: undefined reference to `dlopen'
 collect2: error: ld returned 1 exit status
 configure:12298: $? = 1
 configure: failed program was:
@@ -886,7 +886,7 @@ lt_cv_to_tool_file_cmd=func_convert_file_noop
 ## Output variables. ##
 ## ----------------- ##
 
-ACLOCAL='${SHELL} /home/parallels/Documents/OS/C-File-System/mathfs/fuse/missing --run aclocal-1.12'
+ACLOCAL='${SHELL} /home/parallels/Github/C-File-System/mathfs/fuse/missing --run aclocal-1.12'
 AMDEPBACKSLASH='\'
 AMDEP_FALSE='#'
 AMDEP_TRUE=''
@@ -896,9 +896,9 @@ AM_DEFAULT_V='$(AM_DEFAULT_VERBOSITY)'
 AM_DEFAULT_VERBOSITY='0'
 AM_V='$(V)'
 AR='ar'
-AUTOCONF='${SHELL} /home/parallels/Documents/OS/C-File-System/mathfs/fuse/missing --run autoconf'
-AUTOHEADER='${SHELL} /home/parallels/Documents/OS/C-File-System/mathfs/fuse/missing --run autoheader'
-AUTOMAKE='${SHELL} /home/parallels/Documents/OS/C-File-System/mathfs/fuse/missing --run automake-1.12'
+AUTOCONF='${SHELL} /home/parallels/Github/C-File-System/mathfs/fuse/missing --run autoconf'
+AUTOHEADER='${SHELL} /home/parallels/Github/C-File-System/mathfs/fuse/missing --run autoheader'
+AUTOMAKE='${SHELL} /home/parallels/Github/C-File-System/mathfs/fuse/missing --run automake-1.12'
 AWK='mawk'
 BSD_FALSE=''
 BSD_TRUE='#'
@@ -939,7 +939,7 @@ LIPO=''
 LN_S='ln -s'
 LTLIBICONV=''
 LTLIBOBJS=''
-MAKEINFO='${SHELL} /home/parallels/Documents/OS/C-File-System/mathfs/fuse/missing --run makeinfo'
+MAKEINFO='${SHELL} /home/parallels/Github/C-File-System/mathfs/fuse/missing --run makeinfo'
 MANIFEST_TOOL=':'
 MKDIR_P='/bin/mkdir -p'
 MOUNT_FUSE_PATH='/sbin'
@@ -999,7 +999,7 @@ host_vendor='unknown'
 htmldir='${docdir}'
 includedir='${prefix}/include'
 infodir='${datarootdir}/info'
-install_sh='${SHELL} /home/parallels/Documents/OS/C-File-System/mathfs/fuse/install-sh'
+install_sh='${SHELL} /home/parallels/Github/C-File-System/mathfs/fuse/install-sh'
 libdir='${exec_prefix}/lib'
 libexecdir='${exec_prefix}/libexec'
 libfuse_libs='-ldl  '
