@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <time.h>
 #include <fuse/fuse.h>
+#include <math.h>
 
 static const char *_factor_path = "/factor/";
 static const char *_fib_path = "/fib/";
@@ -287,11 +288,80 @@ mathfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
 		}
 	}
 	else if(strstr(path, _mul_path) != NULL)
-		size = help_read(buf, "Multiplication\n", size, offset);
+	{
+		if(strstr(path,"doc"))
+		{
+			size = help_read(buf, "Multiplication\n", size, offset);
+		}
+		else
+		{
+			//add the two numbers hooker
+			 char *temp = calloc(strlen(path),sizeof(char *));
+			 strcpy(temp,path);
+			 char *token = strtok(temp,"/");
+			 char * first = strtok(NULL,"/");
+			 int firstValue = atoi(first);
+			 char * second = strtok(NULL,"/");
+			 int secondValue = atoi(second);
+
+			 int resultValue = firstValue * secondValue;
+			 int numberOfDigits = numDigits(resultValue);
+			 char *result = calloc(numberOfDigits,sizeof(char *));
+			 sprintf(result,"%d\n",resultValue);
+			//char * result = calloc()
+			size = help_read(buf, result, size, offset);
+		}
+	}
 	else if(strstr(path, _div_path) != NULL)
-		size = help_read(buf, "Division...\n", size, offset);
+	{
+		if(strstr(path,"doc"))
+		{
+			size = help_read(buf, "Division...\n", size, offset);
+		}
+		else
+		{
+			//add the two numbers hooker
+			 char *temp = calloc(strlen(path),sizeof(char *));
+			 strcpy(temp,path);
+			 char *token = strtok(temp,"/");
+			 char * first = strtok(NULL,"/");
+			 int firstValue = atoi(first);
+			 char * second = strtok(NULL,"/");
+			 int secondValue = atoi(second);
+
+			 int resultValue = firstValue / secondValue;
+			 int numberOfDigits = numDigits(resultValue);
+			 char *result = calloc(numberOfDigits,sizeof(char *));
+			 sprintf(result,"%d\n",resultValue);
+			//char * result = calloc()
+			size = help_read(buf, result, size, offset);
+		}	
+	}
 	else if(strstr(path, _exp_path) != NULL)
-		size = help_read(buf, "Exponential...\n", size, offset);
+	{
+		if(strstr(path,"doc"))
+		{
+			size = help_read(buf, "Exponential...\n", size, offset);
+		}
+		else
+		{
+			//add the two numbers hooker
+			 char *temp = calloc(strlen(path),sizeof(char *));
+			 strcpy(temp,path);
+			 char *token = strtok(temp,"/");
+			 char * first = strtok(NULL,"/");
+			 int firstValue = atoi(first);
+			 char * second = strtok(NULL,"/");
+			 int secondValue = atoi(second);
+
+			 int resultValue = pow(firstValue,secondValue);
+			 int numberOfDigits = numDigits(resultValue);
+			 char *result = calloc(numberOfDigits,sizeof(char *));
+			 sprintf(result,"%d\n",resultValue);
+			//char * result = calloc()
+			size = help_read(buf, result, size, offset);
+		}	
+	}
 	else
 		return -ENOENT;
 
