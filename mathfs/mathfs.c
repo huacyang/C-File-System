@@ -158,28 +158,6 @@ mathfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset
 		return -ENOENT;
     }
 
-    //check what path the user is asking for
-    /*
-    if(strstr(_add_path_dir,path))
-    {
-
-    	//look at the numbers in the path bro
-		//math/add/1/2
-		//we want to get the characters at 9 and 11
-    	int firstNumber = path[9] - '0';
-    	int secondNumber = path[11] - '0';
-    	int result = firstNumber + secondNumber;
-    	printf("\n\nThe result is %d\n\n",result);
-    	strcpy(resultPath,_add_path);
-    	//add 4 in the path 1 for the slash and the other 3 for 'add'
-    	filler(buf, path + 4, NULL, 0);
-    }
-    else
-    {
-    	return -ENOENT;
-    }
-*/
-
 	return 0;
 }		
 
@@ -228,142 +206,117 @@ help_read(char *buf, char *str, size_t size, off_t offset) {
 static int 
 mathfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *fi) {
     (void) fi;
+
+    int  numberOfDigits;
+    double resultValue,firstValue, secondValue;
+    char *temp, *token, *first, *second, *result;
     
 	if(strstr(path, _factor_path) != NULL) {
-		size = help_read(buf, (char*)path, size, offset);
-	}
-	else if(strstr(path, _fib_path) != NULL)
-	{
-		size = help_read(buf, "Fibonacci...\n", size, offset);
-	}
-
-	else if(strstr(path, _add_path) != NULL)
-	{
-		if(strstr(path,"doc"))
-		{
-			size = help_read(buf, "Addition\n", size, offset);
-		}
-		else
-		{
+		size = help_read(buf, "Show the prime factors of a number\nThe file factor/n contains the prime factors of n.\n", size, offset);
+	} else if(strstr(path, _fib_path) != NULL) {
+		size = help_read(buf, "Produce a fibonacci sequence.\nThe file fib/n contains the first n fibonacci numbers.\n", size, offset);
+	} else if(strstr(path, _add_path) != NULL) {
+		if(strstr(path,"doc")) {
+			size = help_read(buf, "Add two numbers.\nThe file add/a/b contains the sum a+b.\n", size, offset);
+		} else {
 			//add the two numbers hooker
-			 char *temp = calloc(strlen(path),sizeof(char *));
-			 strcpy(temp,path);
-			 char *token = strtok(temp,"/");
-			 char * first = strtok(NULL,"/");
-			 int firstValue = atoi(first);
-			 char * second = strtok(NULL,"/");
-			 int secondValue = atoi(second);
+			temp = calloc(strlen(path),sizeof(char *));
+			strcpy(temp,path);
+			token = strtok(temp,"/");
+			first = strtok(NULL,"/");
+			firstValue = atof(first);
+			second = strtok(NULL,"/");
+			secondValue = atof(second);
 
-			 int resultValue = secondValue + firstValue;
-			 int numberOfDigits = numDigits(resultValue);
-			 char *result = calloc(numberOfDigits,sizeof(char *));
-			 sprintf(result,"%d\n",resultValue);
-			//char * result = calloc()
+			resultValue = secondValue + firstValue;
+			numberOfDigits = numDigits(resultValue);
+			result = calloc(numberOfDigits,sizeof(char *));
+			sprintf(result, "%f\n", resultValue);
 			size = help_read(buf, result, size, offset);
 		}
-	}
-	else if(strstr(path, _sub_path) != NULL)
-	{
-		if(strstr(path,"doc"))
-		{
-			size = help_read(buf, "Subtraction...\n", size, offset);
-		}
-		else
-		{
+	} else if(strstr(path, _sub_path) != NULL) {
+		if(strstr(path,"doc")) {
+			size = help_read(buf, "Subtract two numbers.\nThe file sub/a/b contains the difference a-b.\n", size, offset);
+		} else {
 			//add the two numbers hooker
-			 char *temp = calloc(strlen(path),sizeof(char *));
-			 strcpy(temp,path);
-			 char *token = strtok(temp,"/");
-			 char * first = strtok(NULL,"/");
-			 int firstValue = atoi(first);
-			 char * second = strtok(NULL,"/");
-			 int secondValue = atoi(second);
+			temp = calloc(strlen(path),sizeof(char *));
+			strcpy(temp,path);
+			token = strtok(temp,"/");
+			first = strtok(NULL,"/");
+			firstValue = atof(first);
+			second = strtok(NULL,"/");
+			secondValue = atof(second);
 
-			 int resultValue = firstValue - secondValue;
-			 int numberOfDigits = numDigits(resultValue);
-			 char *result = calloc(numberOfDigits,sizeof(char *));
-			 sprintf(result,"%d\n",resultValue);
-			//char * result = calloc()
+			resultValue = firstValue - secondValue;
+			numberOfDigits = numDigits(resultValue);
+			result = calloc(numberOfDigits,sizeof(char *));
+			sprintf(result,"%f\n",resultValue);
 			size = help_read(buf, result, size, offset);
 		}
-	}
-	else if(strstr(path, _mul_path) != NULL)
-	{
-		if(strstr(path,"doc"))
-		{
-			size = help_read(buf, "Multiplication\n", size, offset);
-		}
-		else
-		{
+	} else if(strstr(path, _mul_path) != NULL) {
+		if(strstr(path,"doc")) {
+			size = help_read(buf, "Multiply two numbers.\nThe file mul/a/b contains the product a*b.\n", size, offset);
+		} else {
 			//add the two numbers hooker
-			 char *temp = calloc(strlen(path),sizeof(char *));
-			 strcpy(temp,path);
-			 char *token = strtok(temp,"/");
-			 char * first = strtok(NULL,"/");
-			 int firstValue = atoi(first);
-			 char * second = strtok(NULL,"/");
-			 int secondValue = atoi(second);
+			temp = calloc(strlen(path),sizeof(char *));
+			strcpy(temp,path);
+			token = strtok(temp,"/");
+			first = strtok(NULL,"/");
+			firstValue = atof(first);
+			second = strtok(NULL,"/");
+			secondValue = atof(second);
 
-			 int resultValue = firstValue * secondValue;
-			 int numberOfDigits = numDigits(resultValue);
-			 char *result = calloc(numberOfDigits,sizeof(char *));
-			 sprintf(result,"%d\n",resultValue);
-			//char * result = calloc()
+			resultValue = firstValue * secondValue;
+			numberOfDigits = numDigits(resultValue);
+			result = calloc(numberOfDigits,sizeof(char *));
+			sprintf(result,"%f\n",resultValue);
 			size = help_read(buf, result, size, offset);
 		}
-	}
-	else if(strstr(path, _div_path) != NULL)
-	{
-		if(strstr(path,"doc"))
-		{
-			size = help_read(buf, "Division...\n", size, offset);
-		}
-		else
-		{
+	} else if(strstr(path, _div_path) != NULL) {
+		if(strstr(path,"doc")) {
+			size = help_read(buf, "Divide two numbers.\nThe file div/a/b contains the quotient a/b\n", size, offset);
+		} else {
 			//add the two numbers hooker
-			 char *temp = calloc(strlen(path),sizeof(char *));
-			 strcpy(temp,path);
-			 char *token = strtok(temp,"/");
-			 char * first = strtok(NULL,"/");
-			 int firstValue = atoi(first);
-			 char * second = strtok(NULL,"/");
-			 int secondValue = atoi(second);
+			temp = calloc(strlen(path),sizeof(char *));
+			strcpy(temp,path);
+			token = strtok(temp,"/");
+			first = strtok(NULL,"/");
+			firstValue = atof(first);
+			second = strtok(NULL,"/");
+			secondValue = atof(second);
 
-			 int resultValue = firstValue / secondValue;
-			 int numberOfDigits = numDigits(resultValue);
-			 char *result = calloc(numberOfDigits,sizeof(char *));
-			 sprintf(result,"%d\n",resultValue);
-			//char * result = calloc()
+			// handler for when dividing by 0
+			if (secondValue == 0)
+				return help_read(buf, "divide by zero error\n", size, offset);
+
+			resultValue = (double) firstValue / (double) secondValue;
+			numberOfDigits = numDigits(resultValue);
+			result = calloc(numberOfDigits,sizeof(char *));
+			sprintf(result,"%f\n",resultValue);
 			size = help_read(buf, result, size, offset);
 		}	
-	}
-	else if(strstr(path, _exp_path) != NULL)
-	{
-		if(strstr(path,"doc"))
-		{
-			size = help_read(buf, "Exponential...\n", size, offset);
-		}
-		else
-		{
+	} else if(strstr(path, _exp_path) != NULL) {
+		if(strstr(path,"doc")) {
+			size = help_read(buf, "Raise a number to an exponent.\nThe file exp/a/b contains a raised to the power of b.\n", size, offset);
+		} else {
 			//add the two numbers hooker
-			 char *temp = calloc(strlen(path),sizeof(char *));
-			 strcpy(temp,path);
-			 char *token = strtok(temp,"/");
-			 char * first = strtok(NULL,"/");
-			 int firstValue = atoi(first);
-			 char * second = strtok(NULL,"/");
-			 int secondValue = atoi(second);
+			temp = calloc(strlen(path),sizeof(char *));
+			strcpy(temp,path);
+			token = strtok(temp,"/");
+			first = strtok(NULL,"/");
+			firstValue = atof(first);
+			second = strtok(NULL,"/");
+			secondValue = atof(second);
 
-			 int resultValue = pow(firstValue,secondValue);
-			 int numberOfDigits = numDigits(resultValue);
-			 char *result = calloc(numberOfDigits,sizeof(char *));
-			 sprintf(result,"%d\n",resultValue);
-			//char * result = calloc()
+			resultValue = pow(firstValue,secondValue);
+			numberOfDigits = numDigits(resultValue);
+			result = calloc(numberOfDigits,sizeof(char *));
+			sprintf(result,"%f\n",resultValue);
 			size = help_read(buf, result, size, offset);
 		}	
-	}
-	else
+	} else {
 		return -ENOENT;
+	}
 
 	return size;
 }
