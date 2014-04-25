@@ -8,33 +8,54 @@
 #include <time.h>
 #include <fuse/fuse.h>
 
-static const char *_factor_path = "/factor";
-static const char *_fib_path = "/fib";
-static const char *_add_path = "/add";
-static const char *_sub_path = "/sub";
-static const char *_mul_path = "/mul";
-static const char *_div_path = "/div";
-static const char *_exp_path = "/exp";
+static const char *_factor_path = "/factor/";
+static const char *_fib_path = "/fib/";
+static const char *_add_path = "/add/";
+static const char *_sub_path = "/sub/";
+static const char *_mul_path = "/mul/";
+static const char *_div_path = "/div/";
+static const char *_exp_path = "/exp/";
+
+
+static const char *_factor_path_dir = "/factor";
+static const char *_fib_path_dir = "/fib";
+static const char *_add_path_dir = "/add";
+static const char *_sub_path_dir = "/sub";
+static const char *_mul_path_dir = "/mul";
+static const char *_div_path_dir = "/div";
+static const char *_exp_path_dir = "/exp";
+
 static int _input_len = 20;
+
 
 // FUSE function implementations.
 static int
 mathfs_getattr(const char *path, struct stat *stbuf) {
 	int res = 0;
 
+	//Reset stbuf
 	memset(stbuf, 0, sizeof(struct stat));
+	//Marks the file as a direcrory
 	if (strcmp(path, "/") == 0) {
 		stbuf->st_mode = S_IFDIR | 0755;
-		stbuf->st_nlink = 2;
-	} else if (strstr(_factor_path, path) != NULL ||
+		//Will contain another directory inside so 4
+		stbuf->st_nlink = 4;
+	// } else if (strstr(_factor_path, path) != NULL ||
+	// 		   strstr(_fib_path, path) != NULL ||
+	// 		   strstr(_add_path, path) != NULL ||
+	// 		   strstr(_sub_path, path) != NULL ||
+	// 		   strstr(_mul_path, path) != NULL ||
+	// 		   strstr(_div_path, path) != NULL ||
+	// 		   strstr(_exp_path, path) != NULL) {
+} else if (strstr(_factor_path, path) != NULL ||
 			   strstr(_fib_path, path) != NULL ||
 			   strstr(_add_path, path) != NULL ||
 			   strstr(_sub_path, path) != NULL ||
 			   strstr(_mul_path, path) != NULL ||
 			   strstr(_div_path, path) != NULL ||
 			   strstr(_exp_path, path) != NULL) {
-
 		stbuf->st_mode = S_IFREG | 0444;
+		//Link to the file and its number
 		stbuf->st_nlink = 1;
 		stbuf->st_size = _input_len;
 	} else {
@@ -44,23 +65,48 @@ mathfs_getattr(const char *path, struct stat *stbuf) {
 	return res;
 }
 
+//Buf is used to hold the contents of a directory
+//Path to the directory we want to use
+//filler is used to add contents to the directory
+
+
 static int
 mathfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi) {
     (void) offset;
     (void) fi;
+    char * resultPath = calloc(6,sizeof(char));
+    //check what path the user is asking for
+    
+    if(strstr(_add_path_dir,path))
+    {
 
-    if (strstr(path, "/") != 0)
-		return -ENOENT;
+    	//look at the numbers in the path bro
+		//math/add/1/2
+		//we want to get the characters at 9 and 11
+    	int firstNumber = path[9] - '0';
+    	int secondNumber = path[11] - '0';
+    	int result = firstNumber + secondNumber;
+    	printf("\n\nThe result is %d\n\n",result);
+    	strcpy(resultPath,_add_path);
+    	//add 4 in the path 1 for the slash and the other 3 for 'add'
+    	filler(buf, path + 4, NULL, 0);
+    }
+    else
+    {
+    	return -ENOENT;
+    }
 
-	filler(buf, ".", NULL, 0);
-	filler(buf, "..", NULL, 0);
-	filler(buf, _factor_path + 1, NULL, 0);
-	filler(buf, _fib_path + 1, NULL, 0);
-	filler(buf, _add_path + 1, NULL, 0);
-	filler(buf, _sub_path + 1, NULL, 0);
-	filler(buf, _mul_path + 1, NULL, 0);
-	filler(buf, _div_path + 1, NULL, 0);
-	filler(buf, _exp_path + 1, NULL, 0);
+	// filler(buf, ".", NULL, 0);
+	// filler(buf, "..", NULL, 0);
+	// filler(buf, _factor_path + 1, NULL, 0);
+	// filler(buf, _fib_path + 1, NULL, 0);
+	// filler(buf, _add_path + 1, NULL, 0);
+	// filler(buf, _sub_path + 1, NULL, 0);
+	// filler(buf, _mul_path + 1, NULL, 0);
+	// filler(buf, _div_path + 1, NULL, 0);
+	// filler(buf, _exp_path + 1, NULL, 0);
+
+	return 0;
 }		
 
 static int
