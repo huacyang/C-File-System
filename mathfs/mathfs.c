@@ -16,7 +16,6 @@ static const char *_mul_path = "/mul/";
 static const char *_div_path = "/div/";
 static const char *_exp_path = "/exp/";
 
-
 static const char *_factor_path_dir = "/factor";
 static const char *_fib_path_dir = "/fib";
 static const char *_add_path_dir = "/add";
@@ -26,7 +25,6 @@ static const char *_div_path_dir = "/div";
 static const char *_exp_path_dir = "/exp";
 
 static int _input_len = 20;
-
 
 // FUSE function implementations.
 static int
@@ -38,22 +36,23 @@ mathfs_getattr(const char *path, struct stat *stbuf) {
 	//Marks the file as a direcrory
 	if (strcmp(path, "/") == 0) {
 		stbuf->st_mode = S_IFDIR | 0755;
-		//Will contain another directory inside so 4
-		stbuf->st_nlink = 4;
-	// } else if (strstr(_factor_path, path) != NULL ||
-	// 		   strstr(_fib_path, path) != NULL ||
-	// 		   strstr(_add_path, path) != NULL ||
-	// 		   strstr(_sub_path, path) != NULL ||
-	// 		   strstr(_mul_path, path) != NULL ||
-	// 		   strstr(_div_path, path) != NULL ||
-	// 		   strstr(_exp_path, path) != NULL) {
-} else if (strstr(_factor_path, path) != NULL ||
-			   strstr(_fib_path, path) != NULL ||
-			   strstr(_add_path, path) != NULL ||
-			   strstr(_sub_path, path) != NULL ||
-			   strstr(_mul_path, path) != NULL ||
-			   strstr(_div_path, path) != NULL ||
-			   strstr(_exp_path, path) != NULL) {
+		stbuf->st_nlink = 8;
+	} else if (strcmp(_factor_path_dir, path) == 0 ||
+			   strcmp(_fib_path_dir, path) == 0 ||
+			   strcmp(_add_path_dir, path) == 0 ||
+			   strcmp(_sub_path_dir, path) == 0 ||
+			   strcmp(_mul_path_dir, path) == 0 ||
+			   strcmp(_div_path_dir, path) == 0 ||
+			   strcmp(_exp_path_dir, path) == 0) {
+		stbuf->st_mode = S_IFDIR | 0755;
+		stbuf->st_nlink = 2;
+	} else if (strstr(path, _factor_path) != NULL ||
+			   strstr(path, _fib_path) != NULL ||
+			   strstr(path, _add_path) != NULL ||
+			   strstr(path, _sub_path) != NULL ||
+			   strstr(path, _mul_path) != NULL ||
+			   strstr(path, _div_path) != NULL ||
+			   strstr(path, _exp_path) != NULL) {
 		stbuf->st_mode = S_IFREG | 0444;
 		//Link to the file and its number
 		stbuf->st_nlink = 1;
@@ -75,8 +74,34 @@ mathfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset
     (void) offset;
     (void) fi;
     char * resultPath = calloc(6,sizeof(char));
+
+    if (strcmp(path, "/") == 0) {
+		filler(buf, ".", NULL, 0);
+		filler(buf, "..", NULL, 0);
+		filler(buf, _factor_path_dir + 1, NULL, 0);
+		filler(buf, _fib_path_dir + 1, NULL, 0);
+		filler(buf, _add_path_dir + 1, NULL, 0);
+		filler(buf, _sub_path_dir + 1, NULL, 0);
+		filler(buf, _mul_path_dir + 1, NULL, 0);
+		filler(buf, _div_path_dir + 1, NULL, 0);
+		filler(buf, _exp_path_dir + 1, NULL, 0);
+    } else if (strcmp(_factor_path_dir, path) == 0 ||
+			   strcmp(_fib_path_dir, path) == 0 ||
+			   strcmp(_add_path_dir, path) == 0 ||
+			   strcmp(_sub_path_dir, path) == 0 ||
+			   strcmp(_mul_path_dir, path) == 0 ||
+			   strcmp(_div_path_dir, path) == 0 ||
+			   strcmp(_exp_path_dir, path) == 0) {
+
+    	filler(buf, ".", NULL, 0);
+		filler(buf, "..", NULL, 0);
+		filler(buf, "doc", NULL, 0);
+    } else {
+		return -ENOENT;
+    }
+
     //check what path the user is asking for
-    
+    /*
     if(strstr(_add_path_dir,path))
     {
 
@@ -95,16 +120,7 @@ mathfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset
     {
     	return -ENOENT;
     }
-
-	// filler(buf, ".", NULL, 0);
-	// filler(buf, "..", NULL, 0);
-	// filler(buf, _factor_path + 1, NULL, 0);
-	// filler(buf, _fib_path + 1, NULL, 0);
-	// filler(buf, _add_path + 1, NULL, 0);
-	// filler(buf, _sub_path + 1, NULL, 0);
-	// filler(buf, _mul_path + 1, NULL, 0);
-	// filler(buf, _div_path + 1, NULL, 0);
-	// filler(buf, _exp_path + 1, NULL, 0);
+*/
 
 	return 0;
 }		
@@ -113,24 +129,25 @@ static int
 help_open(struct fuse_file_info *fi) {
 	if ((fi->flags & 3) != O_RDONLY)
 		return -EACCES;
+	return 0;
 }
 
 static int
 mathfs_open(const char *path, struct fuse_file_info *fi) {
 
-	if(strstr(_factor_path, path) != NULL)
+	if(strstr(path, _factor_path_dir) != NULL)
 		return help_open(fi);
-	else if (strstr(_fib_path, path) != NULL)
+	else if (strstr(path, _fib_path_dir) != NULL)
 		return help_open(fi);
-	else if (strstr(_add_path, path) != NULL)
+	else if (strstr(path, _add_path_dir) != NULL)
 		return help_open(fi);
-	else if (strstr(_sub_path, path) != NULL)
+	else if (strstr(path, _sub_path) != NULL)
 		return help_open(fi);
-	else if (strstr(_mul_path, path) != NULL)
+	else if (strstr(path, _mul_path) != NULL)
 		return help_open(fi);
-	else if (strstr(_div_path, path) != NULL)
+	else if (strstr(path, _div_path) != NULL)
 		return help_open(fi);
-	else if (strstr(_exp_path, path) != NULL)
+	else if (strstr(path, _exp_path) != NULL)
 		return help_open(fi);
 	else
 		return -ENOENT;
@@ -154,20 +171,20 @@ static int
 mathfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *fi) {
     (void) fi;
     
-	if(strstr(_factor_path, path) != NULL) {
-		size = help_read(buf, "Factor...\n", size, offset);
+	if(strstr(path, _factor_path) != NULL) {
+		size = help_read(buf, (char*)path, size, offset);
 	}
-	else if(strstr(_fib_path, path) != NULL)
+	else if(strstr(path, _fib_path) != NULL)
 		size = help_read(buf, "Fibonacci...\n", size, offset);
-	else if(strstr(_add_path, path) != NULL)
+	else if(strstr(path, _add_path) != NULL)
 		size = help_read(buf, "Addition...\n", size, offset);
-	else if(strstr(_sub_path, path) != NULL)
+	else if(strstr(path, _sub_path) != NULL)
 		size = help_read(buf, "Subtraction...\n", size, offset);
-	else if(strstr(_mul_path, path) != NULL)
+	else if(strstr(path, _mul_path) != NULL)
 		size = help_read(buf, "Multiplication\n", size, offset);
-	else if(strstr(_div_path, path) != NULL)
+	else if(strstr(path, _div_path) != NULL)
 		size = help_read(buf, "Division...\n", size, offset);
-	else if(strstr(_exp_path, path) != NULL)
+	else if(strstr(path, _exp_path) != NULL)
 		size = help_read(buf, "Exponential...\n", size, offset);
 	else
 		return -ENOENT;
