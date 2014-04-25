@@ -1,3 +1,12 @@
+/*
+ * @author: Hua Yang
+ * @RUID: 128-00-2637
+ * @author: Erik Kamp
+ * @RUID: 132-00-4838
+ * @author: Sharlina Keshava
+ * @RUID: 140-00-9007
+ */
+
 #define FUSE_USE_VERSION 30
 
 #include <stdio.h>
@@ -42,7 +51,7 @@ int
 numDigits(int number)
 {
     int digits = 0;
-    if (number < 0) digits = 1; // remove this line if '-' counts as a digit
+    if (number < 0) digits = 1;
     while (number) {
         number /= 10;
         digits++;
