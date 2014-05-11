@@ -1,12 +1,3 @@
-/*
- * @author: Hua Yang
- * @RUID: 128-00-2637
- * @author: Erik Kamp
- * @RUID: 132-00-4838
- * @author: Sharlina Keshava
- * @RUID: 140-00-9007
- */
-
 #define FUSE_USE_VERSION 30
 
 #include <stdio.h>
@@ -60,7 +51,7 @@ findFib(int numberOfFibs)
     for (c = 0 ; c < numberOfFibs ; c ++)
     {
     	tempString = calloc(numDigits(store[c])+1, sizeof(char*));
-    	sprintf(tempString,"%d\n",store[c]);	
+    	sprintf(tempString,"%d\n",store[c]);
     	strcat(resultString,tempString);
     }
 
@@ -73,7 +64,7 @@ findNumberOfOccurances(const char * string , char occurance)
 	int i, count = 0;
 	for(i=0 ; string[i]!='\0' ; i++) {
 		if(string[i] == occurance)
-			count++;	
+			count++;
 	}
 	return count;
 }
@@ -120,8 +111,8 @@ mathfs_getattr(const char *path, struct stat *stbuf) {
 			   strstr(path, _mul_path) != NULL ||
 			   strstr(path, _div_path) != NULL ||
 			   strstr(path, _exp_path) != NULL) {
-		if(strstr(path,"doc") != NULL || 
-			numberOfOccurances == 3 || 
+		if(strstr(path,"doc") != NULL ||
+			numberOfOccurances == 3 ||
 			(numberOfOccurances == 2 && (strstr(path,"factor") ||
 			strstr(path,"fib")))) {
 			stbuf->st_mode = S_IFREG | 0444;
@@ -132,9 +123,9 @@ mathfs_getattr(const char *path, struct stat *stbuf) {
 			stbuf->st_mode = S_IFDIR | 0755;
 			//Link to the file and its number
 			stbuf->st_nlink = 2;
-			//stbuf->st_size = _input_len;	
+			//stbuf->st_size = _input_len;
 		}
-	} 
+	}
 	else {
 		res = -ENOENT;
 	}
@@ -188,7 +179,7 @@ mathfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset
     }
 
 	return 0;
-}		
+}
 
 static int
 help_open(struct fuse_file_info *fi) {
@@ -260,14 +251,14 @@ help_factor(int digit) {
     return full;
 }
 
-static int 
+static int
 mathfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *fi) {
     (void) fi;
 
     int  numberOfDigits;
     double resultValue,firstValue, secondValue;
     char *temp, *token, *first, *second, *result;
-    
+
 	if(strstr(path, _factor_path) != NULL) {
 		if(strstr(path,"doc")) {
 			size = help_read(buf, "Show the prime factors of a number\nThe file factor/n contains the prime factors of n.\n", size, offset);
@@ -282,7 +273,7 @@ mathfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
 
 			firstValue = atoi(first);
 			result = help_factor(firstValue);
-			return help_read(buf, result, size, offset);	
+			return help_read(buf, result, size, offset);
 		}
 	} else if(strstr(path, _fib_path) != NULL) {
 
@@ -296,10 +287,10 @@ mathfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
 			firstValue = atoi(first);
 			if(findNumberOfOccurances(first , '.') != 0)
 				return help_read(buf, "the number to factor must be an integer\n", size, offset);
-			
+
 			char * number = findFib(firstValue);
 			return help_read(buf, number, size, offset);
-		}	
+		}
 	} else if(strstr(path, _add_path) != NULL) {
 		if(strstr(path,"doc")) {
 			size = help_read(buf, "Add two numbers.\nThe file add/a/b contains the sum a+b.\n", size, offset);
@@ -360,7 +351,7 @@ mathfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
 				return help_read(buf, "Divide by zero error.\n", size, offset);
 
 			resultValue = (double) firstValue / (double) secondValue;
-		}	
+		}
 	} else if(strstr(path, _exp_path) != NULL) {
 		if(strstr(path,"doc")) {
 			size = help_read(buf, "Raise a number to an exponent.\nThe file exp/a/b contains a raised to the power of b.\n", size, offset);
@@ -375,7 +366,7 @@ mathfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_
 			secondValue = atof(second);
 
 			resultValue = pow(firstValue,secondValue);
-		}	
+		}
 	} else {
 		return -ENOENT;
 	}
